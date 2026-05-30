@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type ProjectCardData } from "@/components/ProjectCard";
 import { formatBDT, formatNumber } from "@/lib/format";
 import { ArrowRight, Heart, Users, Sparkles, Shield } from "lucide-react";
+import heroImage from "@/assets/hero-community.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
