@@ -7,12 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 const links = [
   { to: "/", label: "Home" },
+  { to: "/about", label: "About" },
+  { to: "/organogram", label: "Organogram" },
   { to: "/projects", label: "Projects" },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/news", label: "News & Media" },
-  { to: "/organogram", label: "Organogram" },
-  { to: "/volunteer", label: "Volunteer" },
-  { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -79,6 +78,7 @@ export function Navbar() {
           ) : (
             <Link to="/login" className="btn-outline">Login</Link>
           )}
+          <Link to="/volunteer" className="btn-outline">Volunteer</Link>
           <Link to="/donate" className="btn-primary">Donate Now</Link>
         </div>
 
@@ -122,6 +122,9 @@ export function Navbar() {
               ) : (
                 <Link to="/login" onClick={() => setOpen(false)} className="btn-outline">Login</Link>
               )}
+              <Link to="/volunteer" onClick={() => setOpen(false)} className="btn-outline">
+                Volunteer
+              </Link>
               <Link to="/donate" onClick={() => setOpen(false)} className="btn-primary">
                 Donate Now
               </Link>
