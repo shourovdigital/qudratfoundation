@@ -14,16 +14,354 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean
+          message: string
+          name: string
+          phone: string | null
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_read?: boolean
+          message: string
+          name: string
+          phone?: string | null
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          name?: string
+          phone?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          donor_email: string | null
+          donor_name: string
+          donor_phone: string | null
+          id: string
+          is_anonymous: boolean
+          message: string | null
+          payment_method: string | null
+          project_id: string | null
+          status: Database["public"]["Enums"]["donation_status"]
+          transaction_ref: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name: string
+          donor_phone?: string | null
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          payment_method?: string | null
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["donation_status"]
+          transaction_ref?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name?: string
+          donor_phone?: string | null
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          payment_method?: string | null
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["donation_status"]
+          transaction_ref?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organogram: {
+        Row: {
+          created_at: string
+          department: string | null
+          email: string | null
+          id: string
+          level: number
+          name: string
+          order_index: number
+          parent_id: string | null
+          phone: string | null
+          photo_url: string | null
+          position: string
+          responsibilities: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          id?: string
+          level?: number
+          name: string
+          order_index?: number
+          parent_id?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          position: string
+          responsibilities?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          id?: string
+          level?: number
+          name?: string
+          order_index?: number
+          parent_id?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          position?: string
+          responsibilities?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organogram_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "organogram"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          district: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          district?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          district?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          district: string | null
+          donor_count: number
+          end_date: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          raised_amount: number
+          short_description: string
+          slug: string
+          start_date: string
+          status: Database["public"]["Enums"]["project_status"]
+          target_amount: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          district?: string | null
+          donor_count?: number
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          raised_amount?: number
+          short_description: string
+          slug: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["project_status"]
+          target_amount: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          district?: string | null
+          donor_count?: number
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          raised_amount?: number
+          short_description?: string
+          slug?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["project_status"]
+          target_amount?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      volunteers: {
+        Row: {
+          admin_notes: string | null
+          age: number | null
+          availability: string | null
+          created_at: string
+          district: string
+          email: string
+          full_name: string
+          id: string
+          motivation: string
+          occupation: string | null
+          phone: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          skills: string[]
+          status: Database["public"]["Enums"]["volunteer_status"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          age?: number | null
+          availability?: string | null
+          created_at?: string
+          district: string
+          email: string
+          full_name: string
+          id?: string
+          motivation: string
+          occupation?: string | null
+          phone: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          skills?: string[]
+          status?: Database["public"]["Enums"]["volunteer_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          age?: number | null
+          availability?: string | null
+          created_at?: string
+          district?: string
+          email?: string
+          full_name?: string
+          id?: string
+          motivation?: string
+          occupation?: string | null
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          skills?: string[]
+          status?: Database["public"]["Enums"]["volunteer_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "member" | "user"
+      donation_status: "pending" | "verified" | "rejected"
+      project_status: "active" | "closed" | "paused"
+      volunteer_status:
+        | "pending"
+        | "approved"
+        | "declined"
+        | "postponed"
+        | "blocked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +488,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "member", "user"],
+      donation_status: ["pending", "verified", "rejected"],
+      project_status: ["active", "closed", "paused"],
+      volunteer_status: [
+        "pending",
+        "approved",
+        "declined",
+        "postponed",
+        "blocked",
+      ],
+    },
   },
 } as const
