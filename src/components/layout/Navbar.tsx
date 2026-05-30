@@ -21,15 +21,28 @@ export function Navbar() {
   const { user, isAdmin, signOut } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("site_settings").select("foundation_name, logo_url").eq("id", 1).maybeSingle();
+      return data as { foundation_name: string; logo_url: string | null } | null;
+    },
+    staleTime: 60_000,
+  });
+
   return (
     <nav className="sticky top-0 z-50 bg-sand-light/85 backdrop-blur-md border-b border-heritage-green/10">
       <div className="container-page flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="size-9 bg-heritage-green rounded-full flex items-center justify-center text-white font-bold font-display group-hover:scale-105 transition-transform">
-            ক
-          </div>
+          {settings?.logo_url ? (
+            <img src={settings.logo_url} alt={settings.foundation_name} className="size-9 rounded-full object-cover group-hover:scale-105 transition-transform" />
+          ) : (
+            <div className="size-9 bg-heritage-green rounded-full flex items-center justify-center text-white font-bold font-display group-hover:scale-105 transition-transform">
+              ক
+            </div>
+          )}
           <span className="font-display text-lg tracking-tight text-heritage-green font-bold">
-            Qudrat
+            {settings?.foundation_name ?? "Qudrat"}
           </span>
         </Link>
 

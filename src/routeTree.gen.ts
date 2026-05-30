@@ -19,8 +19,10 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio/index'
+import { Route as NewsIndexRouteImport } from './routes/news/index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 import { Route as PortfolioSlugRouteImport } from './routes/portfolio/$slug'
+import { Route as NewsSlugRouteImport } from './routes/news/$slug'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
@@ -73,6 +75,11 @@ const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   path: '/portfolio/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   id: '/projects/$slug',
   path: '/projects/$slug',
@@ -81,6 +88,11 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
 const PortfolioSlugRoute = PortfolioSlugRouteImport.update({
   id: '/portfolio/$slug',
   path: '/portfolio/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/news/$slug',
+  path: '/news/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -104,8 +116,10 @@ export interface FileRoutesByFullPath {
   '/volunteer': typeof VolunteerRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/news/$slug': typeof NewsSlugRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/news/': typeof NewsIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -119,8 +133,10 @@ export interface FileRoutesByTo {
   '/volunteer': typeof VolunteerRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/news/$slug': typeof NewsSlugRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/news': typeof NewsIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/projects': typeof ProjectsIndexRoute
 }
@@ -136,8 +152,10 @@ export interface FileRoutesById {
   '/volunteer': typeof VolunteerRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/news/$slug': typeof NewsSlugRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/news/': typeof NewsIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
@@ -153,8 +171,10 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/admin'
     | '/dashboard'
+    | '/news/$slug'
     | '/portfolio/$slug'
     | '/projects/$slug'
+    | '/news/'
     | '/portfolio/'
     | '/projects/'
   fileRoutesByTo: FileRoutesByTo
@@ -168,8 +188,10 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/admin'
     | '/dashboard'
+    | '/news/$slug'
     | '/portfolio/$slug'
     | '/projects/$slug'
+    | '/news'
     | '/portfolio'
     | '/projects'
   id:
@@ -184,8 +206,10 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/news/$slug'
     | '/portfolio/$slug'
     | '/projects/$slug'
+    | '/news/'
     | '/portfolio/'
     | '/projects/'
   fileRoutesById: FileRoutesById
@@ -199,8 +223,10 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OrganogramRoute: typeof OrganogramRoute
   VolunteerRoute: typeof VolunteerRoute
+  NewsSlugRoute: typeof NewsSlugRoute
   PortfolioSlugRoute: typeof PortfolioSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
+  NewsIndexRoute: typeof NewsIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
@@ -277,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news/': {
+      id: '/news/'
+      path: '/news'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/$slug': {
       id: '/projects/$slug'
       path: '/projects/$slug'
@@ -289,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/$slug'
       fullPath: '/portfolio/$slug'
       preLoaderRoute: typeof PortfolioSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/news/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard': {
@@ -331,8 +371,10 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OrganogramRoute: OrganogramRoute,
   VolunteerRoute: VolunteerRoute,
+  NewsSlugRoute: NewsSlugRoute,
   PortfolioSlugRoute: PortfolioSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
+  NewsIndexRoute: NewsIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
 }
