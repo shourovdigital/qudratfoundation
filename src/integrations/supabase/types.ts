@@ -106,6 +106,54 @@ export type Database = {
           },
         ]
       }
+      news: {
+        Row: {
+          category: string
+          content: string | null
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          is_published: boolean
+          media_type: Database["public"]["Enums"]["news_media_type"]
+          published_at: string
+          slug: string
+          title: string
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          category?: string
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          media_type?: Database["public"]["Enums"]["news_media_type"]
+          published_at?: string
+          slug: string
+          title: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          media_type?: Database["public"]["Enums"]["news_media_type"]
+          published_at?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       organogram: {
         Row: {
           created_at: string
@@ -321,6 +369,51 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          about: string | null
+          address: string | null
+          email: string | null
+          facebook_url: string | null
+          foundation_name: string
+          id: number
+          instagram_url: string | null
+          logo_url: string | null
+          phone: string | null
+          tagline: string | null
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          about?: string | null
+          address?: string | null
+          email?: string | null
+          facebook_url?: string | null
+          foundation_name?: string
+          id?: number
+          instagram_url?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          tagline?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          about?: string | null
+          address?: string | null
+          email?: string | null
+          facebook_url?: string | null
+          foundation_name?: string
+          id?: number
+          instagram_url?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          tagline?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -418,6 +511,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "member" | "user"
       donation_status: "pending" | "verified" | "rejected"
+      news_media_type: "image" | "video" | "text"
       project_status: "active" | "closed" | "paused"
       volunteer_status:
         | "pending"
@@ -554,6 +648,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "member", "user"],
       donation_status: ["pending", "verified", "rejected"],
+      news_media_type: ["image", "video", "text"],
       project_status: ["active", "closed", "paused"],
       volunteer_status: [
         "pending",
