@@ -25,6 +25,7 @@ export function Footer() {
             <li><Link to="/about" className="hover:text-heritage-red">About Us</Link></li>
             <li><Link to="/organogram" className="hover:text-heritage-red">Our Team</Link></li>
             <li><Link to="/projects" className="hover:text-heritage-red">Active Projects</Link></li>
+            <li><Link to="/portfolio" className="hover:text-heritage-red">Portfolio</Link></li>
             <li><Link to="/volunteer" className="hover:text-heritage-red">Become a Volunteer</Link></li>
           </ul>
         </div>
@@ -38,7 +39,7 @@ export function Footer() {
         </div>
       </div>
       <div className="container-page mt-16 pt-6 border-t border-heritage-green/10 flex flex-col md:flex-row justify-between items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-bold text-ink-soft/70">
-        <p>© {new Date().getFullYear()} Odhikar Foundation</p>
+        <p>© {new Date().getFullYear()} Qudrat Foundation</p>
         <p>Crafting Hope for the Nation</p>
       </div>
     </footer>

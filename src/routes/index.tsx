@@ -8,8 +8,8 @@ import { ArrowRight, Heart, Users, Sparkles, Shield } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Odhikar Foundation — Empowering Bangladesh" },
-      { name: "description", content: "Transparency-first Bangladeshi foundation. Live-tracked donations, project-wise giving, and community-driven social work." },
+      { title: "Qudrat Foundation — Empowering Bangladesh" },
+      { name: "description", content: "Qudrat Foundation — Transparency-first Bangladeshi foundation. Live-tracked donations, project-wise giving, and community-driven social work." },
     ],
   }),
   component: Home,
