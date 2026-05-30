@@ -78,13 +78,13 @@ function About() {
         <h2 className="font-display text-3xl md:text-4xl text-heritage-green mb-6">Our Story</h2>
         <div className="space-y-5 text-ink-soft leading-relaxed">
           <p>
-            Odhikar Foundation began in 2020 as a small WhatsApp group of friends collecting funds
+            Qudrat Foundation began in 2020 as a small WhatsApp group of friends collecting funds
             for COVID-affected rickshaw pullers in Dhaka. Within months, we had distributed aid to
             over 4,000 families. By the end of the year, what started as a temporary initiative
             became a permanent commitment.
           </p>
           <p>
-            Today, Odhikar runs structured, target-based campaigns across food security, education,
+            Today, Qudrat runs structured, target-based campaigns across food security, education,
             health, and emergency relief. Every donation is project-tagged. Every project has a
             target. When the target is reached, donations close automatically — no overflow, no waste.
           </p>

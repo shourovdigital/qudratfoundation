@@ -6,7 +6,7 @@ import { Mail, Phone, User } from "lucide-react";
 export const Route = createFileRoute("/organogram")({
   head: () => ({
     meta: [
-      { title: "Organogram — Odhikar Foundation" },
+      { title: "Organogram — Qudrat Foundation" },
       { name: "description", content: "Meet our leadership and team structure. Transparency in who does what." },
     ],
   }),
@@ -52,7 +52,7 @@ function Organogram() {
           Our Structure
         </h1>
         <p className="text-lg text-ink-soft">
-          Transparency starts with knowing who is accountable for what. Here's how Odhikar is organized.
+          Transparency starts with knowing who is accountable for what. Here's how Qudrat is organized.
         </p>
       </div>
 

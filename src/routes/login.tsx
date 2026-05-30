@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
-    meta: [{ title: "Login — Odhikar Foundation" }],
+    meta: [{ title: "Login — Qudrat Foundation" }],
   }),
   component: LoginPage,
 });

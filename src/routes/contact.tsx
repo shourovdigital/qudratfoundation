@@ -8,8 +8,8 @@ import { Mail, Phone, MapPin, Send } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Odhikar Foundation" },
-      { name: "description", content: "Get in touch with the Odhikar Foundation team." },
+      { title: "Contact — Qudrat Foundation" },
+      { name: "description", content: "Get in touch with the Qudrat Foundation team." },
     ],
   }),
   component: Contact,
