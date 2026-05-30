@@ -56,15 +56,38 @@ function Admin() {
 
 function DonationsTab() {
   const qc = useQueryClient();
-  const { data } = useQuery({
-    queryKey: ["admin-donations"],
+  const [projectFilter, setProjectFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [from, setFrom] = useState<string>("");
+  const [to, setTo] = useState<string>("");
+
+  const { data: projects } = useQuery({
+    queryKey: ["all-projects-mini"],
     queryFn: async () => {
-      const { data } = await supabase.from("donations")
-        .select("*, project:projects(title)")
-        .order("created_at", { ascending: false }).limit(100);
+      const { data } = await supabase.from("projects").select("id, title").order("title");
       return data ?? [];
     },
   });
+
+  const { data } = useQuery({
+    queryKey: ["admin-donations", projectFilter, statusFilter, from, to],
+    queryFn: async () => {
+      let q = supabase.from("donations").select("*, project:projects(title)").order("created_at", { ascending: false }).limit(500);
+      if (projectFilter === "__general__") q = q.is("project_id", null);
+      else if (projectFilter) q = q.eq("project_id", projectFilter);
+      if (statusFilter) q = q.eq("status", statusFilter as "pending" | "verified" | "rejected");
+      if (from) q = q.gte("created_at", new Date(from).toISOString());
+      if (to) {
+        const end = new Date(to); end.setHours(23, 59, 59, 999);
+        q = q.lte("created_at", end.toISOString());
+      }
+      const { data } = await q;
+      return data ?? [];
+    },
+  });
+
+  const totalVerified = (data ?? []).filter((d) => d.status === "verified").reduce((a, b) => a + Number(b.amount), 0);
+  const totalPending = (data ?? []).filter((d) => d.status === "pending").reduce((a, b) => a + Number(b.amount), 0);
 
   const update = async (id: string, status: "verified" | "rejected") => {
     const { error } = await supabase.from("donations").update({ status }).eq("id", id);
@@ -80,47 +103,88 @@ function DonationsTab() {
   };
 
   return (
-    <div className="bg-ink text-white rounded-2xl p-4 md:p-6 overflow-x-auto">
-      <table className="w-full text-sm min-w-[800px]">
-        <thead>
-          <tr className="text-white/40 text-[10px] uppercase tracking-widest border-b border-white/10">
-            <th className="text-left pb-3">Donor</th><th className="text-left pb-3">Project</th>
-            <th className="text-left pb-3">Amount</th><th className="text-left pb-3">Method / Txn</th>
-            <th className="text-left pb-3">Status</th><th className="text-left pb-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.map((d) => (
-            <tr key={d.id} className="border-b border-white/5">
-              <td className="py-3">
-                <p className="font-semibold">{d.is_anonymous ? "Anonymous" : d.donor_name}</p>
-                <p className="text-xs text-white/40">{d.donor_email}</p>
-              </td>
-              <td className="py-3 text-white/70">{(d.project as { title?: string } | null)?.title ?? "General"}</td>
-              <td className="py-3 font-bold">{formatBDT(d.amount)}</td>
-              <td className="py-3 text-xs text-white/70">{d.payment_method}<br/><span className="text-white/40">{d.transaction_ref}</span></td>
-              <td className="py-3">
-                <span className={`text-xs px-2 py-1 rounded ${
-                  d.status === "verified" ? "bg-green-500/20 text-green-300" :
-                  d.status === "rejected" ? "bg-red-500/20 text-red-300" :
-                  "bg-yellow-500/20 text-yellow-300"
-                }`}>{d.status}</span>
-              </td>
-              <td className="py-3">
-                <div className="flex gap-1">
-                  {d.status !== "verified" && (
-                    <button onClick={() => update(d.id, "verified")} className="text-xs px-2 py-1 bg-heritage-green rounded">Verify</button>
-                  )}
-                  {d.status !== "rejected" && (
-                    <button onClick={() => update(d.id, "rejected")} className="text-xs px-2 py-1 bg-white/10 rounded">Reject</button>
-                  )}
-                  <button onClick={() => del(d.id)} className="text-xs px-2 py-1 hover:text-heritage-red"><Trash2 className="size-3" /></button>
-                </div>
-              </td>
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="card-surface p-4 grid md:grid-cols-5 gap-3">
+        <select className="input-base" value={projectFilter} onChange={(e) => setProjectFilter(e.target.value)}>
+          <option value="">All projects</option>
+          <option value="__general__">General (no project)</option>
+          {projects?.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
+        </select>
+        <select className="input-base" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <option value="">All statuses</option>
+          <option value="verified">Verified</option>
+          <option value="pending">Pending</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <input className="input-base" type="date" value={from} onChange={(e) => setFrom(e.target.value)} placeholder="From" />
+        <input className="input-base" type="date" value={to} onChange={(e) => setTo(e.target.value)} placeholder="To" />
+        <button className="btn-ghost" onClick={() => { setProjectFilter(""); setStatusFilter(""); setFrom(""); setTo(""); }}>Reset</button>
+      </div>
+
+      {/* Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="card-surface p-4">
+          <p className="text-[10px] uppercase tracking-widest text-ink-soft font-bold">Verified Total</p>
+          <p className="font-display text-2xl text-heritage-green">{formatBDT(totalVerified)}</p>
+        </div>
+        <div className="card-surface p-4">
+          <p className="text-[10px] uppercase tracking-widest text-ink-soft font-bold">Pending Total</p>
+          <p className="font-display text-2xl text-amber-600">{formatBDT(totalPending)}</p>
+        </div>
+        <div className="card-surface p-4">
+          <p className="text-[10px] uppercase tracking-widest text-ink-soft font-bold">Records</p>
+          <p className="font-display text-2xl">{data?.length ?? 0}</p>
+        </div>
+      </div>
+
+      <div className="bg-ink text-white rounded-2xl p-4 md:p-6 overflow-x-auto">
+        <table className="w-full text-sm min-w-[900px]">
+          <thead>
+            <tr className="text-white/40 text-[10px] uppercase tracking-widest border-b border-white/10">
+              <th className="text-left pb-3">Date</th>
+              <th className="text-left pb-3">Donor</th><th className="text-left pb-3">Project</th>
+              <th className="text-left pb-3">Amount</th><th className="text-left pb-3">Method / Txn</th>
+              <th className="text-left pb-3">Status</th><th className="text-left pb-3">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data?.map((d) => (
+              <tr key={d.id} className="border-b border-white/5">
+                <td className="py-3 text-xs text-white/60 whitespace-nowrap">{new Date(d.created_at).toLocaleDateString("en-GB")}</td>
+                <td className="py-3">
+                  <p className="font-semibold">{d.is_anonymous ? "Anonymous" : d.donor_name}</p>
+                  <p className="text-xs text-white/40">{d.donor_email}</p>
+                </td>
+                <td className="py-3 text-white/70">{(d.project as { title?: string } | null)?.title ?? "General"}</td>
+                <td className="py-3 font-bold">{formatBDT(d.amount)}</td>
+                <td className="py-3 text-xs text-white/70">{d.payment_method}<br/><span className="text-white/40">{d.transaction_ref}</span></td>
+                <td className="py-3">
+                  <span className={`text-xs px-2 py-1 rounded ${
+                    d.status === "verified" ? "bg-green-500/20 text-green-300" :
+                    d.status === "rejected" ? "bg-red-500/20 text-red-300" :
+                    "bg-yellow-500/20 text-yellow-300"
+                  }`}>{d.status}</span>
+                </td>
+                <td className="py-3">
+                  <div className="flex gap-1">
+                    {d.status !== "verified" && (
+                      <button onClick={() => update(d.id, "verified")} className="text-xs px-2 py-1 bg-heritage-green rounded">Verify</button>
+                    )}
+                    {d.status !== "rejected" && (
+                      <button onClick={() => update(d.id, "rejected")} className="text-xs px-2 py-1 bg-white/10 rounded">Reject</button>
+                    )}
+                    <button onClick={() => del(d.id)} className="text-xs px-2 py-1 hover:text-heritage-red"><Trash2 className="size-3" /></button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {(data?.length ?? 0) === 0 && (
+              <tr><td colSpan={7} className="py-8 text-center text-white/40">No donations match the filters.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
