@@ -1,12 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const links = [
   { to: "/", label: "Home" },
   { to: "/projects", label: "Projects" },
   { to: "/portfolio", label: "Portfolio" },
+  { to: "/news", label: "News & Media" },
   { to: "/organogram", label: "Organogram" },
   { to: "/volunteer", label: "Volunteer" },
   { to: "/about", label: "About" },
