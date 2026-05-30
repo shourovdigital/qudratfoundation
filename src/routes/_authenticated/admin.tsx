@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: Admin,
 });
 
-type Tab = "donations" | "projects" | "volunteers" | "messages";
+type Tab = "donations" | "projects" | "portfolios" | "volunteers" | "messages";
 
 function Admin() {
   const { isAdmin } = useAuth();
@@ -33,7 +33,7 @@ function Admin() {
       <p className="text-ink-soft mb-8">Verify donations, manage projects, review volunteer applications.</p>
 
       <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {(["donations","projects","volunteers","messages"] as Tab[]).map((t) => (
+        {(["donations","projects","portfolios","volunteers","messages"] as Tab[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-5 py-2 rounded-full text-sm font-semibold capitalize whitespace-nowrap transition-all ${
               tab === t ? "bg-heritage-green text-white" : "bg-heritage-green-soft text-heritage-green"
@@ -43,6 +43,7 @@ function Admin() {
 
       {tab === "donations" && <DonationsTab />}
       {tab === "projects" && <ProjectsTab />}
+      {tab === "portfolios" && <PortfoliosTab />}
       {tab === "volunteers" && <VolunteersTab />}
       {tab === "messages" && <MessagesTab />}
     </div>
@@ -307,5 +308,112 @@ function MessagesTab() {
         </div>
       ))}
     </div>
+  );
+}
+
+function PortfoliosTab() {
+  const qc = useQueryClient();
+  const [showNew, setShowNew] = useState(false);
+  const { data } = useQuery({
+    queryKey: ["admin-portfolios"],
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("portfolios").select("*").order("created_at", { ascending: false });
+      return (data ?? []) as Array<{ id: string; title: string; slug: string; category: string; district: string | null; beneficiaries: number; budget_spent: number; is_published: boolean; is_featured: boolean; completed_date: string | null }>;
+    },
+  });
+
+  const toggle = async (id: string, field: "is_published" | "is_featured", value: boolean) => {
+    const { error } = await (supabase as any).from("portfolios").update({ [field]: value }).eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Updated"); qc.invalidateQueries({ queryKey: ["admin-portfolios"] }); }
+  };
+
+  const del = async (id: string) => {
+    if (!confirm("Delete this portfolio entry?")) return;
+    const { error } = await (supabase as any).from("portfolios").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-portfolios"] }); }
+  };
+
+  return (
+    <div>
+      <button onClick={() => setShowNew(!showNew)} className="btn-primary mb-4">
+        <Plus className="size-4" /> New Portfolio
+      </button>
+      {showNew && <NewPortfolioForm onDone={() => { setShowNew(false); qc.invalidateQueries({ queryKey: ["admin-portfolios"] }); }} />}
+
+      <div className="grid gap-4 mt-4">
+        {data?.map((p) => (
+          <div key={p.id} className="card-surface p-5">
+            <div className="flex flex-col md:flex-row md:justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h3 className="font-bold">{p.title}</h3>
+                  <span className="text-[10px] px-2 py-0.5 bg-heritage-green-soft text-heritage-green rounded-full uppercase font-bold">{p.category}</span>
+                  {p.is_featured && <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full uppercase font-bold">Featured</span>}
+                  {!p.is_published && <span className="text-[10px] px-2 py-0.5 bg-ink text-white rounded-full uppercase font-bold">Draft</span>}
+                </div>
+                <p className="text-sm text-ink-soft">/{p.slug} · {p.district ?? "—"}</p>
+                <p className="text-sm mt-2"><strong>{formatBDT(p.budget_spent)}</strong> spent · {p.beneficiaries} reached{p.completed_date ? ` · ${new Date(p.completed_date).toLocaleDateString()}` : ""}</p>
+              </div>
+              <div className="flex flex-wrap gap-1 shrink-0">
+                <button onClick={() => toggle(p.id, "is_published", !p.is_published)} className="text-xs px-3 py-1.5 bg-heritage-green-soft text-heritage-green rounded">
+                  {p.is_published ? "Unpublish" : "Publish"}
+                </button>
+                <button onClick={() => toggle(p.id, "is_featured", !p.is_featured)} className="text-xs px-3 py-1.5 bg-amber-100 text-amber-700 rounded">
+                  {p.is_featured ? "Unfeature" : "Feature"}
+                </button>
+                <button onClick={() => del(p.id)} className="text-xs px-2 py-1.5 text-heritage-red"><Trash2 className="size-3" /></button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NewPortfolioForm({ onDone }: { onDone: () => void }) {
+  const [form, setForm] = useState({
+    title: "", slug: "", category: "Education", district: "Dhaka",
+    short_description: "", description: "", cover_image_url: "", impact_summary: "",
+    beneficiaries: 0, budget_spent: 0, completed_date: "", is_featured: false,
+  });
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const slug = form.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const payload = {
+      ...form, slug,
+      cover_image_url: form.cover_image_url || null,
+      impact_summary: form.impact_summary || null,
+      completed_date: form.completed_date || null,
+    };
+    const { error } = await (supabase as any).from("portfolios").insert(payload);
+    if (error) toast.error(error.message);
+    else { toast.success("Portfolio created"); onDone(); }
+  };
+  return (
+    <form onSubmit={submit} className="card-surface p-6 space-y-3 mb-4">
+      <input className="input-base" placeholder="Title" required value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} />
+      <input className="input-base" placeholder="Slug (auto)" value={form.slug} onChange={(e) => setForm({...form, slug: e.target.value})} />
+      <input className="input-base" placeholder="Short description" required value={form.short_description} onChange={(e) => setForm({...form, short_description: e.target.value})} />
+      <textarea className="input-base resize-none" rows={4} placeholder="Full description (newline = paragraph)" required value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
+      <div className="grid grid-cols-2 gap-3">
+        <input className="input-base" placeholder="Category" required value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} />
+        <input className="input-base" placeholder="District" value={form.district} onChange={(e) => setForm({...form, district: e.target.value})} />
+      </div>
+      <input className="input-base" placeholder="Cover image URL" value={form.cover_image_url} onChange={(e) => setForm({...form, cover_image_url: e.target.value})} />
+      <input className="input-base" placeholder="Impact summary (one line)" value={form.impact_summary} onChange={(e) => setForm({...form, impact_summary: e.target.value})} />
+      <div className="grid grid-cols-3 gap-3">
+        <input className="input-base" type="number" placeholder="Beneficiaries" value={form.beneficiaries} onChange={(e) => setForm({...form, beneficiaries: Number(e.target.value)})} />
+        <input className="input-base" type="number" placeholder="Budget spent (BDT)" value={form.budget_spent} onChange={(e) => setForm({...form, budget_spent: Number(e.target.value)})} />
+        <input className="input-base" type="date" value={form.completed_date} onChange={(e) => setForm({...form, completed_date: e.target.value})} />
+      </div>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({...form, is_featured: e.target.checked})} />
+        Mark as featured
+      </label>
+      <button className="btn-primary w-full" type="submit">Create Portfolio</button>
+    </form>
   );
 }
