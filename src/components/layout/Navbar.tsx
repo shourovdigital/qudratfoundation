@@ -122,6 +122,9 @@ export function Navbar() {
               ) : (
                 <Link to="/login" onClick={() => setOpen(false)} className="btn-outline">Login</Link>
               )}
+              <Link to="/volunteer" onClick={() => setOpen(false)} className="btn-outline">
+                Volunteer
+              </Link>
               <Link to="/donate" onClick={() => setOpen(false)} className="btn-primary">
                 Donate Now
               </Link>
