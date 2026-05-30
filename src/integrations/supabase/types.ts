@@ -162,6 +162,69 @@ export type Database = {
           },
         ]
       }
+      portfolios: {
+        Row: {
+          beneficiaries: number
+          budget_spent: number
+          category: string
+          completed_date: string | null
+          cover_image_url: string | null
+          created_at: string
+          description: string
+          district: string | null
+          gallery_urls: string[]
+          id: string
+          impact_summary: string | null
+          is_featured: boolean
+          is_published: boolean
+          order_index: number
+          short_description: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          beneficiaries?: number
+          budget_spent?: number
+          category: string
+          completed_date?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description: string
+          district?: string | null
+          gallery_urls?: string[]
+          id?: string
+          impact_summary?: string | null
+          is_featured?: boolean
+          is_published?: boolean
+          order_index?: number
+          short_description: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          beneficiaries?: number
+          budget_spent?: number
+          category?: string
+          completed_date?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string
+          district?: string | null
+          gallery_urls?: string[]
+          id?: string
+          impact_summary?: string | null
+          is_featured?: boolean
+          is_published?: boolean
+          order_index?: number
+          short_description?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

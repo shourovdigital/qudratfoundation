@@ -62,9 +62,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Odhikar Foundation — Empowering Bangladesh" },
-      { name: "description", content: "A transparency-first Bangladeshi foundation building sustainable futures through live-tracked social projects, direct community action, and volunteer-led impact." },
-      { property: "og:title", content: "Odhikar Foundation — Empowering Bangladesh" },
+      { title: "Qudrat Foundation — Empowering Bangladesh" },
+      { name: "description", content: "Qudrat Foundation — a transparency-first Bangladeshi foundation building sustainable futures through live-tracked social projects, direct community action, and volunteer-led impact." },
+      { property: "og:title", content: "Qudrat Foundation — Empowering Bangladesh" },
       { property: "og:description", content: "Live-tracked donations, project-based giving, and community-led social work across 64 districts." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

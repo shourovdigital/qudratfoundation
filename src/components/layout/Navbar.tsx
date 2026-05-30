@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 const links = [
   { to: "/", label: "Home" },
   { to: "/projects", label: "Projects" },
+  { to: "/portfolio", label: "Portfolio" },
   { to: "/organogram", label: "Organogram" },
   { to: "/volunteer", label: "Volunteer" },
   { to: "/about", label: "About" },
@@ -22,10 +23,10 @@ export function Navbar() {
       <div className="container-page flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2.5 group">
           <div className="size-9 bg-heritage-green rounded-full flex items-center justify-center text-white font-bold font-display group-hover:scale-105 transition-transform">
-            অ
+            ক
           </div>
           <span className="font-display text-lg tracking-tight text-heritage-green font-bold">
-            Odhikar
+            Qudrat
           </span>
         </Link>
 
