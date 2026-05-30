@@ -485,3 +485,279 @@ function NewPortfolioForm({ onDone }: { onDone: () => void }) {
     </form>
   );
 }
+
+// ============== SETTINGS TAB ==============
+type SiteSettings = {
+  id: number;
+  foundation_name: string;
+  tagline: string | null;
+  about: string | null;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+  logo_url: string | null;
+  facebook_url: string | null;
+  youtube_url: string | null;
+  instagram_url: string | null;
+};
+
+function SettingsTab() {
+  const qc = useQueryClient();
+  const [form, setForm] = useState<SiteSettings | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  useQuery({
+    queryKey: ["site-settings-admin"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from("site_settings").select("*").eq("id", 1).maybeSingle();
+      if (error) throw error;
+      if (data) setForm(data as SiteSettings);
+      return data;
+    },
+  });
+
+  const onLogoUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `logo-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true, cacheControl: "3600" });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from("site-assets").getPublicUrl(path);
+      setForm((f) => f ? { ...f, logo_url: pub.publicUrl } : f);
+      toast.success("Logo uploaded — click Save to apply.");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form) return;
+    const { error } = await (supabase as any).from("site_settings").update({
+      foundation_name: form.foundation_name,
+      tagline: form.tagline,
+      about: form.about,
+      address: form.address,
+      phone: form.phone,
+      email: form.email,
+      logo_url: form.logo_url,
+      facebook_url: form.facebook_url,
+      youtube_url: form.youtube_url,
+      instagram_url: form.instagram_url,
+    }).eq("id", 1);
+    if (error) toast.error(error.message);
+    else { toast.success("Settings saved"); qc.invalidateQueries({ queryKey: ["site-settings"] }); }
+  };
+
+  if (!form) return <p className="text-ink-soft">Loading…</p>;
+
+  return (
+    <form onSubmit={save} className="grid lg:grid-cols-3 gap-6">
+      <div className="card-surface p-6 lg:col-span-1">
+        <h3 className="font-display text-xl text-heritage-green mb-4">Logo</h3>
+        <div className="aspect-square rounded-2xl bg-heritage-green-soft grid place-items-center overflow-hidden mb-4">
+          {form.logo_url ? (
+            <img src={form.logo_url} alt="Logo" className="w-full h-full object-cover" />
+          ) : (
+            <ImageIcon className="size-12 text-heritage-green/40" strokeWidth={1.2} />
+          )}
+        </div>
+        <label className="btn-outline w-full cursor-pointer">
+          <Upload className="size-4" />
+          {uploading ? "Uploading…" : "Upload Logo"}
+          <input type="file" accept="image/*" className="hidden"
+            onChange={(e) => e.target.files?.[0] && onLogoUpload(e.target.files[0])} />
+        </label>
+        {form.logo_url && (
+          <button type="button" onClick={() => setForm({ ...form, logo_url: null })} className="text-xs text-heritage-red mt-2 w-full">
+            Remove logo
+          </button>
+        )}
+      </div>
+
+      <div className="card-surface p-6 lg:col-span-2 space-y-3">
+        <h3 className="font-display text-xl text-heritage-green mb-2">Foundation Info</h3>
+        <input className="input-base" placeholder="Foundation name" required
+          value={form.foundation_name} onChange={(e) => setForm({ ...form, foundation_name: e.target.value })} />
+        <input className="input-base" placeholder="Tagline"
+          value={form.tagline ?? ""} onChange={(e) => setForm({ ...form, tagline: e.target.value })} />
+        <textarea className="input-base resize-none" rows={4} placeholder="About"
+          value={form.about ?? ""} onChange={(e) => setForm({ ...form, about: e.target.value })} />
+        <div className="grid md:grid-cols-2 gap-3">
+          <input className="input-base" placeholder="Address" value={form.address ?? ""} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+          <input className="input-base" placeholder="Phone" value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+        </div>
+        <input className="input-base" type="email" placeholder="Public email" value={form.email ?? ""} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        <div className="grid md:grid-cols-3 gap-3">
+          <input className="input-base" placeholder="Facebook URL" value={form.facebook_url ?? ""} onChange={(e) => setForm({ ...form, facebook_url: e.target.value })} />
+          <input className="input-base" placeholder="YouTube URL" value={form.youtube_url ?? ""} onChange={(e) => setForm({ ...form, youtube_url: e.target.value })} />
+          <input className="input-base" placeholder="Instagram URL" value={form.instagram_url ?? ""} onChange={(e) => setForm({ ...form, instagram_url: e.target.value })} />
+        </div>
+        <button type="submit" className="btn-primary mt-3">Save Settings</button>
+      </div>
+    </form>
+  );
+}
+
+// ============== NEWS TAB ==============
+type NewsRow = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  cover_image_url: string | null;
+  youtube_url: string | null;
+  media_type: "image" | "video" | "text";
+  category: string;
+  is_published: boolean;
+  published_at: string;
+};
+
+function NewsTab() {
+  const qc = useQueryClient();
+  const [showNew, setShowNew] = useState(false);
+  const { data } = useQuery({
+    queryKey: ["admin-news"],
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("news").select("*").order("published_at", { ascending: false });
+      return (data ?? []) as NewsRow[];
+    },
+  });
+
+  const togglePublish = async (id: string, value: boolean) => {
+    const { error } = await (supabase as any).from("news").update({ is_published: value }).eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success(value ? "Published" : "Unpublished"); qc.invalidateQueries({ queryKey: ["admin-news"] }); }
+  };
+
+  const del = async (id: string) => {
+    if (!confirm("Delete this news item?")) return;
+    const { error } = await (supabase as any).from("news").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-news"] }); }
+  };
+
+  return (
+    <div>
+      <button onClick={() => setShowNew(!showNew)} className="btn-primary mb-4">
+        <Plus className="size-4" /> New Post
+      </button>
+      {showNew && <NewNewsForm onDone={() => { setShowNew(false); qc.invalidateQueries({ queryKey: ["admin-news"] }); }} />}
+
+      <div className="grid gap-3 mt-4">
+        {data?.map((n) => (
+          <div key={n.id} className="card-surface p-4 flex gap-4 items-start">
+            <div className="size-20 shrink-0 rounded-xl overflow-hidden bg-heritage-green-soft grid place-items-center text-heritage-green/40">
+              {n.media_type === "video" ? <Play className="size-6" /> :
+                n.cover_image_url ? <img src={n.cover_image_url} alt={n.title} className="w-full h-full object-cover" /> :
+                <FileText className="size-6" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h3 className="font-bold">{n.title}</h3>
+                <span className="text-[10px] px-2 py-0.5 bg-heritage-green-soft text-heritage-green rounded-full uppercase font-bold">{n.category}</span>
+                <span className="text-[10px] px-2 py-0.5 bg-ink/10 text-ink rounded-full uppercase font-bold">{n.media_type}</span>
+                {!n.is_published && <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full uppercase font-bold">Draft</span>}
+              </div>
+              <p className="text-xs text-ink-soft">/{n.slug} · {new Date(n.published_at).toLocaleDateString()}</p>
+            </div>
+            <div className="flex flex-col gap-1 shrink-0">
+              <button onClick={() => togglePublish(n.id, !n.is_published)} className="text-xs px-3 py-1.5 bg-heritage-green-soft text-heritage-green rounded">
+                {n.is_published ? "Unpublish" : "Publish"}
+              </button>
+              <button onClick={() => del(n.id)} className="text-xs px-3 py-1.5 text-heritage-red"><Trash2 className="size-3 inline" /> Delete</button>
+            </div>
+          </div>
+        ))}
+        {(data?.length ?? 0) === 0 && <p className="text-ink-soft">No news posts yet.</p>}
+      </div>
+    </div>
+  );
+}
+
+function NewNewsForm({ onDone }: { onDone: () => void }) {
+  const [form, setForm] = useState({
+    title: "", slug: "", excerpt: "", content: "", category: "News",
+    media_type: "image" as "image" | "video" | "text",
+    cover_image_url: "", youtube_url: "",
+  });
+  const [uploading, setUploading] = useState(false);
+
+  const onImageUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("news-media").upload(path, file, { cacheControl: "3600" });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("news-media").getPublicUrl(path);
+      setForm((f) => ({ ...f, cover_image_url: pub.publicUrl }));
+      toast.success("Image uploaded");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const slug = form.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const payload = {
+      title: form.title,
+      slug,
+      excerpt: form.excerpt || null,
+      content: form.content || null,
+      category: form.category,
+      media_type: form.media_type,
+      cover_image_url: form.cover_image_url || null,
+      youtube_url: form.media_type === "video" ? (form.youtube_url || null) : null,
+    };
+    const { error } = await (supabase as any).from("news").insert(payload);
+    if (error) toast.error(error.message);
+    else { toast.success("News published"); onDone(); }
+  };
+
+  return (
+    <form onSubmit={submit} className="card-surface p-6 space-y-3 mb-4">
+      <input className="input-base" placeholder="Title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+      <div className="grid md:grid-cols-2 gap-3">
+        <input className="input-base" placeholder="Slug (auto)" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
+        <input className="input-base" placeholder="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+      </div>
+      <select className="input-base" value={form.media_type} onChange={(e) => setForm({ ...form, media_type: e.target.value as "image" | "video" | "text" })}>
+        <option value="image">Image post</option>
+        <option value="video">YouTube video</option>
+        <option value="text">Text only</option>
+      </select>
+
+      {form.media_type === "image" && (
+        <div className="space-y-2">
+          <label className="btn-outline cursor-pointer w-full">
+            <Upload className="size-4" />
+            {uploading ? "Uploading…" : "Upload Cover Image"}
+            <input type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onImageUpload(e.target.files[0])} />
+          </label>
+          {form.cover_image_url && <img src={form.cover_image_url} alt="cover" className="w-full aspect-video object-cover rounded-xl" />}
+        </div>
+      )}
+
+      {form.media_type === "video" && (
+        <input className="input-base" placeholder="YouTube URL (e.g. https://youtube.com/watch?v=...)" required
+          value={form.youtube_url} onChange={(e) => setForm({ ...form, youtube_url: e.target.value })} />
+      )}
+
+      <textarea className="input-base resize-none" rows={2} placeholder="Short excerpt (optional)"
+        value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} />
+      <textarea className="input-base resize-none" rows={5} placeholder="Body content (optional, newline = paragraph)"
+        value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
+
+      <button className="btn-primary w-full" type="submit">Publish</button>
+    </form>
+  );
+}
