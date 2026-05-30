@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
-import { Shield, CheckCircle, XCircle, Pause, Ban, Plus, Trash2 } from "lucide-react";
+import { Shield, CheckCircle, XCircle, Pause, Ban, Plus, Trash2, Upload, Image as ImageIcon, Play, FileText } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
@@ -17,12 +17,14 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: Admin,
 });
 
-type Tab = "donations" | "projects" | "portfolios" | "volunteers" | "messages";
+type Tab = "donations" | "projects" | "portfolios" | "news" | "volunteers" | "messages" | "settings";
 
 function Admin() {
   const { isAdmin } = useAuth();
   const [tab, setTab] = useState<Tab>("donations");
   if (!isAdmin) return null;
+
+  const tabs: Tab[] = ["donations", "projects", "portfolios", "news", "volunteers", "messages", "settings"];
 
   return (
     <div className="container-page py-12 md:py-16">
@@ -30,10 +32,10 @@ function Admin() {
         <Shield className="size-6 text-heritage-red" />
         <h1 className="font-display text-4xl md:text-5xl text-heritage-green">Admin Panel</h1>
       </div>
-      <p className="text-ink-soft mb-8">Verify donations, manage projects, review volunteer applications.</p>
+      <p className="text-ink-soft mb-8">Manage everything — donations, projects, news, volunteers and foundation settings.</p>
 
       <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {(["donations","projects","portfolios","volunteers","messages"] as Tab[]).map((t) => (
+        {tabs.map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-5 py-2 rounded-full text-sm font-semibold capitalize whitespace-nowrap transition-all ${
               tab === t ? "bg-heritage-green text-white" : "bg-heritage-green-soft text-heritage-green"
@@ -44,8 +46,10 @@ function Admin() {
       {tab === "donations" && <DonationsTab />}
       {tab === "projects" && <ProjectsTab />}
       {tab === "portfolios" && <PortfoliosTab />}
+      {tab === "news" && <NewsTab />}
       {tab === "volunteers" && <VolunteersTab />}
       {tab === "messages" && <MessagesTab />}
+      {tab === "settings" && <SettingsTab />}
     </div>
   );
 }
