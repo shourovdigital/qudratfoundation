@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Heart, Eye, Hand, Users } from "lucide-react";
+import teamImage from "@/assets/about-team.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Odhikar Foundation" },
-      { name: "description", content: "Our mission, values, and the story behind Odhikar Foundation." },
+      { title: "About — Qudrat Foundation" },
+      { name: "description", content: "Our mission, values, and the story behind Qudrat Foundation." },
     ],
   }),
   component: About,
@@ -14,15 +15,27 @@ export const Route = createFileRoute("/about")({
 function About() {
   return (
     <div className="container-page py-12 md:py-20">
-      <div className="max-w-3xl mb-16">
-        <h1 className="font-display text-5xl md:text-7xl text-heritage-green leading-tight mb-6">
-          A foundation built on <span className="text-heritage-red">trust</span>, not promises.
-        </h1>
-        <p className="text-xl text-ink-soft leading-relaxed">
-          Odhikar Foundation is a registered non-profit organization based in Dhaka, working
-          across all 64 districts of Bangladesh to deliver dignified aid, sustainable livelihoods,
-          and educational opportunity — with radical transparency at every step.
-        </p>
+      <div className="grid lg:grid-cols-5 gap-10 lg:gap-14 items-center mb-20">
+        <div className="lg:col-span-3">
+          <h1 className="font-display text-5xl md:text-7xl text-heritage-green leading-tight mb-6">
+            A foundation built on <span className="text-heritage-red">trust</span>, not promises.
+          </h1>
+          <p className="text-xl text-ink-soft leading-relaxed">
+            Qudrat Foundation is a registered non-profit organization based in Dhaka, working
+            across all 64 districts of Bangladesh to deliver dignified aid, sustainable livelihoods,
+            and educational opportunity — with radical transparency at every step.
+          </p>
+        </div>
+        <div className="lg:col-span-2">
+          <img
+            src={teamImage}
+            alt="Qudrat Foundation team collaborating"
+            className="w-full aspect-[4/3] object-cover rounded-3xl shadow-elevated"
+            loading="lazy"
+            width={1600}
+            height={1067}
+          />
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8 mb-20">
@@ -65,13 +78,13 @@ function About() {
         <h2 className="font-display text-3xl md:text-4xl text-heritage-green mb-6">Our Story</h2>
         <div className="space-y-5 text-ink-soft leading-relaxed">
           <p>
-            Odhikar Foundation began in 2020 as a small WhatsApp group of friends collecting funds
+            Qudrat Foundation began in 2020 as a small WhatsApp group of friends collecting funds
             for COVID-affected rickshaw pullers in Dhaka. Within months, we had distributed aid to
             over 4,000 families. By the end of the year, what started as a temporary initiative
             became a permanent commitment.
           </p>
           <p>
-            Today, Odhikar runs structured, target-based campaigns across food security, education,
+            Today, Qudrat runs structured, target-based campaigns across food security, education,
             health, and emergency relief. Every donation is project-tagged. Every project has a
             target. When the target is reached, donations close automatically — no overflow, no waste.
           </p>

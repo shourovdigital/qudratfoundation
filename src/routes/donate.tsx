@@ -8,7 +8,7 @@ import { Heart } from "lucide-react";
 export const Route = createFileRoute("/donate")({
   head: () => ({
     meta: [
-      { title: "Donate — Odhikar Foundation" },
+      { title: "Donate — Qudrat Foundation" },
       { name: "description", content: "Make a general donation to support our ongoing work across Bangladesh." },
     ],
   }),

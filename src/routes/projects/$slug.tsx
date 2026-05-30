@@ -8,7 +8,7 @@ import { ArrowLeft, Calendar, MapPin, Users, Target } from "lucide-react";
 export const Route = createFileRoute("/projects/$slug")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug} — Odhikar` },
+      { title: `${params.slug} — Qudrat` },
     ],
   }),
   component: ProjectDetail,

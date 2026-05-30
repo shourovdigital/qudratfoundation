@@ -9,7 +9,7 @@ import { Users, CheckCircle2 } from "lucide-react";
 export const Route = createFileRoute("/volunteer")({
   head: () => ({
     meta: [
-      { title: "Volunteer — Odhikar Foundation" },
+      { title: "Volunteer — Qudrat Foundation" },
       { name: "description", content: "Join 2,400+ volunteers working across 64 districts of Bangladesh." },
     ],
   }),

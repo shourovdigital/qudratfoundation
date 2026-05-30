@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type ProjectCardData } from "@/components/ProjectCard";
 import { formatBDT, formatNumber } from "@/lib/format";
 import { ArrowRight, Heart, Users, Sparkles, Shield } from "lucide-react";
+import heroImage from "@/assets/hero-community.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -87,19 +88,20 @@ function Home() {
           </div>
 
           <div className="relative animate-fade-up [animation-delay:200ms]">
-            <div className="w-full aspect-[4/5] bg-gradient-to-br from-heritage-green to-heritage-green/70 rounded-3xl overflow-hidden grid place-items-center relative">
-              <div className="absolute inset-0 opacity-20" style={{
-                backgroundImage: "radial-gradient(circle at 20% 30%, white 1px, transparent 1px), radial-gradient(circle at 80% 70%, white 1px, transparent 1px)",
-                backgroundSize: "50px 50px",
-              }} />
-              <div className="text-center text-white relative z-10 px-8">
-                <Heart className="size-16 mx-auto mb-4 opacity-90" strokeWidth={1.5} />
-                <p className="font-display text-3xl md:text-4xl leading-tight mb-2">
-                  Hands cupped<br />together
+            <div className="w-full aspect-[4/5] rounded-3xl overflow-hidden relative shadow-elevated">
+              <img
+                src={heroImage}
+                alt="Bangladeshi community standing together in unity at golden hour"
+                className="w-full h-full object-cover"
+                width={1080}
+                height={1350}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-heritage-green/80 via-heritage-green/10 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 text-white">
+                <p className="font-display text-2xl md:text-3xl leading-tight">
+                  Hands cupped together.
                 </p>
-                <p className="text-sm opacity-80 max-w-xs mx-auto">
-                  Collective effort, dignified giving, real impact.
-                </p>
+                <p className="text-sm opacity-90 mt-1">Collective effort. Real impact.</p>
               </div>
             </div>
 

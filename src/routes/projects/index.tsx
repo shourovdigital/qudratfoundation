@@ -7,7 +7,7 @@ import { ProjectCard, type ProjectCardData } from "@/components/ProjectCard";
 export const Route = createFileRoute("/projects/")({
   head: () => ({
     meta: [
-      { title: "Projects — Odhikar Foundation" },
+      { title: "Projects — Qudrat Foundation" },
       { name: "description", content: "Browse all active and completed social work projects across Bangladesh." },
     ],
   }),
