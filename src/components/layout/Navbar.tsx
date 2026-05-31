@@ -31,36 +31,39 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-sand-light/85 backdrop-blur-md border-b border-heritage-green/10">
-      <div className="container-page flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          {settings?.logo_url ? (
-            <img src={settings.logo_url} alt={settings.foundation_name} className="size-9 rounded-full object-cover group-hover:scale-105 transition-transform" />
-          ) : (
-            <div className="size-9 bg-heritage-green rounded-full flex items-center justify-center text-white font-bold font-display group-hover:scale-105 transition-transform">
-              ক
-            </div>
-          )}
-          <span className="font-display text-lg tracking-tight text-heritage-green font-bold">
-            {settings?.foundation_name ?? "Qudrat"}
-          </span>
-        </Link>
+      <div className="container-page flex items-center justify-between h-16 gap-6">
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+            {settings?.logo_url ? (
+              <img src={settings.logo_url} alt={settings.foundation_name} className="size-9 rounded-full object-cover group-hover:scale-105 transition-transform" />
+            ) : (
+              <div className="size-9 bg-heritage-green rounded-full flex items-center justify-center text-white font-bold font-display group-hover:scale-105 transition-transform">
+                ক
+              </div>
+            )}
+            <span className="font-display text-lg tracking-tight text-heritage-green font-bold">
+              {settings?.foundation_name ?? "Qudrat"}
+            </span>
+          </Link>
 
-        <div className="hidden lg:flex items-center gap-1">
-          {links.map((l) => {
-            const active = pathname === l.to || (l.to !== "/" && pathname.startsWith(l.to));
-            return (
-              <Link
-                key={l.to}
-                to={l.to}
-                className={`px-3 py-2 text-sm font-medium rounded-full transition-colors ${
-                  active ? "text-heritage-green bg-heritage-green-soft" : "text-ink-soft hover:text-heritage-green"
-                }`}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
+          <div className="hidden lg:flex items-center gap-1">
+            {links.map((l) => {
+              const active = pathname === l.to || (l.to !== "/" && pathname.startsWith(l.to));
+              return (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  className={`px-3 py-2 text-sm font-medium rounded-full transition-colors ${
+                    active ? "text-heritage-green bg-heritage-green-soft" : "text-ink-soft hover:text-heritage-green"
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
+          </div>
         </div>
+
 
         <div className="hidden lg:flex items-center gap-2">
           {user ? (
