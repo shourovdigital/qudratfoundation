@@ -81,7 +81,7 @@ export function Navbar() {
           ) : (
             <Link to="/login" className="btn-outline">Login</Link>
           )}
-          <Link to="/volunteer" className="btn-outline">Volunteer</Link>
+          <Link to="/volunteer" className="btn-outline">Become a Volunteer</Link>
           <Link to="/donate" className="btn-primary">Donate Now</Link>
         </div>
 
